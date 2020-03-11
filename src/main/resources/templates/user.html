@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CT与MRI影像的交互平台</title>
+  <link rel="shortcut icon" th:href="@{/images/favicon.ico}" type="image/x-icon">
+  <link rel="stylesheet" th:href="@{/css/font-awesome/css/font-awesome.css}">
+  <link rel="stylesheet" th:href="@{/css/bulma.min.css}">
+  <link rel="stylesheet" th:href="@{/css/bootstrap-table-bulma.min.css}">
+  <link rel="stylesheet" th:href="@{/css/default.css}">
+  <style>
+    .container.is-fluid {
+      width: 70% !important;
+    }
+    .search-input {
+      border: none !important;
+      outline:none !important;
+      border-bottom: 1px solid #eee !important;
+      padding: 10px 0 !important;
+      background-color: #EEF5F9;
+    }
+    .search-input:focus {
+      border-color: #796AEE !important;
+    }
+    .pagination-link.is-current {
+      background-color: rgba(121, 106, 238, 0.9) !important;
+      border-color: rgba(121, 106, 238, 0.9) !important;
+    }
+    .pagination-link {
+      border-radius: 0 !important;
+    }
+    .table {
+      background-color: #EEF5F9;
+    }
+    .fixed-table-loading {
+      background-color: #EEF5F9 !important;
+    }
+    .table td {
+      padding: .3rem !important;
+    }
+  </style>
+</head>
+<body>
+<div class = "user-container">
+  <th:block th:replace="layout::navbar"/>
+  <div class="container is-fluid">
+    <div id = "toolbar"></div>
+    <table
+      data-classes="table is-fluid table-hover table-sm"
+      id="table"
+      data-locale="zh-CN"
+      data-toggle="table"
+      data-pagination="true"
+      data-pagination-loop="true"
+      data-side-pagination="client"
+      data-page-number="1"
+      data-page-size="5"
+      data-page-list="[10, 25, 50, 100, All]"
+      data-search="true"
+      data-search-on-enter-key="true"
+      data-show-refresh="true"
+      data-search-align="left"
+      data-toolbar-align="right"
+      data-pagination-h-align="right"
+      data-pagination-detail-h-align="left"
+      data-url="/user">
+      <thead>
+      <tr>
+        <th data-field="id">编号</th>
+        <th data-field="username">用户名</th>
+        <th data-field="locked" data-formatter="lockedRender">锁定</th>
+        <th data-field="role">角色</th>
+      </tr>
+      </thead>
+    </table>
+  </div>
+</div>
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{/js/bootstrap-table.min.js}"></script>
+<script th:src="@{/js/bootstrap-table-bulma.min.js}"></script>
+<script th:src="@{/js/bootstrap-table-zh-CN.min.js}"></script>
+<script th:src="@{/js/default.js}"></script>
+<script>
+  $(function () {
+    $('.fixed-table-toolbar .button .fa').removeClass('fa-sync');
+    $('.search-input').removeClass('input');
+    $('.fixed-table-toolbar .button .fa').addClass('fa-refresh');
+    $('.fixed-table-toolbar .button').addClass('is-primary');
+    $('.user-container').css('height',$(window).height() + 'px')
+  })
+
+  function lockedRender(value, row, index, field) {
+    return value ? '是' : '否';
+  }
+</script>
+</body>
+</html>

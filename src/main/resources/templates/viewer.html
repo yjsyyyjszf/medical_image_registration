@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CT与MRI影像的交互平台</title>
+  <link rel="shortcut icon" th:href="@{/images/favicon.ico}" type="image/x-icon">
+  <link rel="stylesheet" href="/css/bulma.min.css">
+  <link rel="stylesheet" href="/css/default.css">
+  <style>
+    html, body {
+      height: 100%;
+    }
+
+    .image-list {
+      height: 100%;
+      overflow-y: scroll;
+      background-color: black;
+    }
+
+    .image-preview {
+      width: 200px;
+      height: 200px;
+      border: solid;
+      margin: 0 auto;
+    }
+
+    #cornerstone-viewport {
+      height: 100%;
+      background-color: black;
+    }
+  </style>
+</head>
+<body>
+<th:block th:replace="layout::navbar"/>
+<div class="container is-fluid" style="height: calc(100% - 72px)">
+  <div class="field">
+    <a class="button is-primary" onclick="toolHandler('Pan')">移动</a>
+    <a class="button is-primary" onclick="toolHandler('Wwwc')">Ww/wc</a>
+    <a class="button is-primary" onclick="toolHandler('Zoom')">缩放</a>
+    <a class="button is-primary" onclick="toolHandler('Angle')">角度</a>
+    <a class="button is-primary" onclick="toolHandler('DragProbe')">探针</a>
+  </div>
+  <div class="columns" style="height: calc(100% - 64px);">
+    <div class="column is-one-fifth">
+      <div id="image-list" class="image-list"></div>
+    </div>
+    <div class="column">
+      <div id="cornerstone-viewport"></div>
+    </div>
+  </div>
+</div>
+<script th:src="@{/js/jquery.min.js}"></script>
+<script src="/js/default.js"></script>
+<script src="/js/axios.min.js"></script>
+
+<script src="/js/hammer.min.js"></script>
+<script src="/js/cornerstone.min.js"></script>
+<script src="/js/cornerstoneMath.min.js"></script>
+<script src="/js/cornerstoneTools.min.js"></script>
+
+<script th:inline="javascript">
+    const id = [[${id}]], ids = [[${ids}]];
+</script>
+<script>
+    let pixelData = [];
+
+    function getPixelData(imageId) {
+        return pixelData[imageId];
+    }
+
+    function str2ab(str) {
+        const buf = new ArrayBuffer(str.length * 2);
+        const bufView = new Uint16Array(buf);
+        for (let i = 0, index = 0, strLen = str.length; i < strLen; i += 2) {
+            const lower = str.charCodeAt(i);
+            const upper = str.charCodeAt(i + 1);
+            bufView[index] = (upper << 8) + lower;
+            index++;
+        }
+        return bufView;
+    }
+
+    function getImage(imageId) {
+        return {
+            promise: axios.get(`/image/${imageId.substring(3)}`).then(response => {
+                const {rows, columns, windowWidth, windowCenter, base64PixelData} = response.data;
+                pixelData[imageId] = str2ab(window.atob(base64PixelData));
+                return {
+                    imageId,
+                    rows,
+                    columns,
+                    windowWidth,
+                    windowCenter,
+                    width: rows,
+                    height: columns,
+                    getPixelData: () => getPixelData(imageId),
+                    slope: 1.0,
+                    color: false,
+                    intercept: 0,
+                    minPixelValue: 0,
+                    maxPixelValue: 4096,
+                    rowPixelSpacing: 0.46875,
+                    columnPixelSpacing: 0.46875,
+                    sizeInBytes: rows * columns * 2,
+                    render: cornerstone.renderGrayscaleImage
+                }
+            })
+        };
+    }
+
+    cornerstone.registerImageLoader('id', getImage);
+
+    const element = document.getElementById('cornerstone-viewport');
+    const imageList = document.getElementById('image-list');
+
+    cornerstoneTools.external.Hammer = Hammer;
+    cornerstoneTools.external.cornerstone = cornerstone;
+    cornerstoneTools.external.cornerstoneMath = cornerstoneMath;
+
+    for (let i = 0; i < ids.length; i++) {
+      let imageItem = document.createElement('div');
+      imageItem.className = 'image-preview';
+      imageItem.onclick = () => {
+        cornerstone.loadImage(`id:${ids[i]}`).then(function (image) {
+          cornerstone.displayImage(element, image);
+        });
+      };
+      imageList.appendChild(imageItem);
+      cornerstone.enable(imageItem);
+      cornerstone.loadImage(`id:${ids[i]}`).then(function (image) {
+        cornerstone.displayImage(imageItem, image);
+      });
+    }
+
+    cornerstoneTools.init();
+    cornerstone.enable(element);
+    cornerstone.loadImage(`id:${id}`).then(function (image) {
+        cornerstone.displayImage(element, image);
+        toolHandler('Wwwc');
+    });
+    cornerstoneTools.addToolForElement(element, cornerstoneTools.PanTool);
+    cornerstoneTools.addToolForElement(element, cornerstoneTools.WwwcTool);
+    cornerstoneTools.addToolForElement(element, cornerstoneTools.ZoomTool);
+    cornerstoneTools.addToolForElement(element, cornerstoneTools.AngleTool);
+    cornerstoneTools.addToolForElement(element, cornerstoneTools.DragProbeTool);
+
+    function toolHandler(tool) {
+        cornerstoneTools.setToolActiveForElement(element, tool, {mouseButtonMask: 1})
+    }
+</script>
+</body>
+</html>

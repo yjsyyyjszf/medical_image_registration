@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Layout</title>
+</head>
+<body>
+<nav class="navbar" role="navigation" aria-label="main navigation" th:fragment="navbar">
+  <div class="container is-fluid">
+    <div class="navbar-brand">
+      <a title="配准" class="navbar-item" href="/registration">
+        <strong>CT与MRI影像交互平台</strong>
+      </a>
+      <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbar-menu">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+    <div id="navbar-menu" class="navbar-menu">
+      <div class="navbar-start">
+        <a class="navbar-item" href="/lookup">
+          图像浏览
+        </a>
+        <a class="navbar-item" href="/user/list">
+          用户浏览
+        </a>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link">
+            视图
+          </a>
+
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="/upload">
+              单视图
+            </a>
+            <a class="navbar-item">
+              多视图
+            </a>
+            <a class="navbar-item">
+              床宽
+            </a>
+            <hr class="navbar-divider">
+            <a class="navbar-item" href="/logout">
+              窗位
+            </a>
+          </div>
+        </div>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" style="color: #000">
+            文件
+          </a>
+
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="/upload">
+              上传
+            </a>
+            <a class="navbar-item">
+              重载
+            </a>
+            <a class="navbar-item">
+              关闭
+            </a>
+            <hr class="navbar-divider">
+            <a class="navbar-item" href="/logout">
+              退出登录
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="navbar-end">
+        <div class="navbar-item">
+          <th:block th:replace="login::userName" />
+          <div class="buttons">
+            <a class="button is-primary" href="/upload">上传</a>
+            <a class="button is-light" href="/logout">退出</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CT与MRI影像的交互平台</title>
+  <link rel="shortcut icon" th:href="@{/images/favicon.ico}" type="image/x-icon">
+  <link rel="stylesheet" href="/css/bulma.min.css">
+  <link rel="stylesheet" href="/css/default.css">
+</head>
+<body>
+<th:block th:replace="layout::navbar"/>
+<div class="container is-fluid">
+  <form action="/lookup" method="post">
+    <div class="columns">
+      <div class="column">
+        <div class="field">
+          <label class="label" for="patient-id">病人 ID</label>
+          <div class="control">
+            <input id="patient-id" class="input-material" type="text" name="patientID" placeholder="Patient ID" th:value="${lookupModel?.patientID}" autocomplete="off">
+          </div>
+        </div>
+      </div>
+      <div class="column">
+        <div class="field">
+          <label class="label" for="patient-name">病人姓名</label>
+          <div class="control">
+            <input id="patient-name" class="input-material" type="text" name="patientName" placeholder="Patient Name" th:value="${lookupModel?.patientName}" autocomplete="off">
+          </div>
+        </div>
+      </div>
+      <div class="column">
+        <div class="field">
+          <label class="label" for="accession-number">检索号</label>
+          <div class="control">
+            <input id="accession-number" class="input-material" type="text" name="accessionNumber" placeholder="Accession Number" th:value="${lookupModel?.accessionNumber}" autocomplete="off">
+          </div>
+        </div>
+      </div>
+      <div class="column">
+        <div class="field">
+          <label class="label" for="study-description">检查描述</label>
+          <div class="control">
+            <input id="study-description" class="input-material" type="text" name="studyDescription" placeholder="Study Description" th:value="${lookupModel?.studyDescription}" autocomplete="off">
+          </div>
+        </div>
+      </div>
+      <div class="column">
+        <div class="field">
+          <label class="label" for="study-date">检查日期</label>
+          <div class="control">
+            <input id="study-date" class="input-material" type="text" name="studyDate" placeholder="Study Date" th:value="${lookupModel?.studyDate}" autocomplete="off">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="field has-text-centered lookup-buttons">
+      <a class="button is-primary" href="/lookup/patients">查看所有病人</a>
+      <button class="button is-info" type="submit">查找</button>
+    </div>
+  </form>
+  <div class="panel" th:if="${patients}">
+    <p class="panel-heading has-background-primary">病人</p>
+    <a class="panel-block" th:each="patient : ${patients}" th:href="'/detail/patient/' + ${patient.id}">
+      <div class="panel-content">
+        <p th:if="${patient.patientName}" th:text="${patient.patientName}"></p>
+        <p th:if="${patient.patientID}">PatientID: <strong th:text="${patient.patientID}"></strong></p>
+        <p th:if="${patient.patientSex}">PatientSex: <strong th:text="${patient.patientSex}"></strong></p>
+        <p th:if="${patient.patientBirthDate}">PatientBirthDate: <strong th:text="${patient.patientBirthDate}"></strong></p>
+      </div>
+    </a>
+    <div class="panel-block" th:if="${patients.size() == 0}">
+      <div class="panel-content">
+        <p>暂无数据</p>
+      </div>
+    </div>
+  </div>
+  <div class="panel" th:if="${studies}">
+    <p class="panel-heading has-background-primary">检查</p>
+    <a class="panel-block" th:each="study : ${studies}" th:href="'/detail/study/' + ${study.id}">
+      <div class="panel-content">
+        <p th:if="${study.patient.patientName}" th:text="${study.patient.patientName} + ' - ' + ${study.studyDescription}"></p>
+        <p th:if="${study.patient.patientID}">PatientID: <strong th:text="${study.patient.patientID}"></strong></p>
+        <p th:if="${study.patient.patientSex}">PatientSex: <strong th:text="${study.patient.patientSex}"></strong></p>
+        <p th:if="${study.patient.patientBirthDate}">PatientBirthDate: <strong th:text="${study.patient.patientBirthDate}"></strong></p>
+        <p th:if="${study.studyID}">StudyID: <strong th:text="${study.studyID}"></strong></p>
+        <p th:if="${study.studyDate}">StudyDate: <strong th:text="${study.studyDate}"></strong></p>
+        <p th:if="${study.studyInstanceUID}">StudyInstanceUID: <strong th:text="${study.studyInstanceUID}"></strong></p>
+        <p th:if="${study.accessionNumber}">AccessionNumber: <strong th:text="${study.accessionNumber}"></strong></p>
+        <p th:if="${study.referringPhysicianName}">ReferringPhysicianName: <strong th:text="${study.referringPhysicianName}"></strong></p>
+      </div>
+    </a>
+    <div class="panel-block" th:if="${studies.size() == 0}">
+      <div class="panel-content">
+        <p>暂无数据</p>
+      </div>
+    </div>
+  </div>
+</div>
+<script th:src="@{/js/jquery.min.js}"></script>
+<script src="/js/default.js"></script>
+</body>
+</html>

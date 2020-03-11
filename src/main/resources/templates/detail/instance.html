@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>医学图像浏览系统</title>
+  <link rel="stylesheet" href="/css/bulma.min.css">
+  <link rel="stylesheet" href="/css/default.css">
+</head>
+<body>
+<th:block th:replace="layout::navbar"/>
+<div class="container is-fluid">
+  <div class="columns">
+    <div class="column is-one-quarter">
+      <div class="panel">
+        <p class="panel-heading has-background-primary">病人</p>
+        <a class="panel-block" th:href="'/detail/patient/' + ${instance.series.study.patient.id}">
+          <div class="panel-content">
+            <p th:text="${instance.series.study.patient.patientName}"></p>
+            <p th:if="${instance.series.study.patient.patientID}">PatientID: <strong th:text="${instance.series.study.patient.patientID}"></strong></p>
+            <p th:if="${instance.series.study.patient.patientSex}">PatientSex: <strong th:text="${instance.series.study.patient.patientSex}"></strong></p>
+            <p th:if="${instance.series.study.patient.patientBirthDate}">PatientBirthDate: <strong th:text="${instance.series.study.patient.patientBirthDate}"></strong></p>
+          </div>
+        </a>
+        <p class="panel-heading has-background-primary">检查</p>
+        <a class="panel-block" th:href="'/detail/study/' + ${instance.series.study.id}">
+          <div class="panel-content">
+            <p th:text="${instance.series.study.studyDescription}"></p>
+            <p th:if="${instance.series.study.studyID}">StudyID: <strong th:text="${instance.series.study.studyID}"></strong></p>
+            <p th:if="${instance.series.study.studyDate}">StudyDate: <strong th:text="${instance.series.study.studyDate}"></strong></p>
+            <p th:if="${instance.series.study.studyInstanceUID}">StudyInstanceUID: <strong th:text="${instance.series.study.studyInstanceUID}"></strong></p>
+            <p th:if="${instance.series.study.accessionNumber}">AccessionNumber: <strong th:text="${instance.series.study.accessionNumber}"></strong></p>
+            <p th:if="${instance.series.study.referringPhysicianName}">ReferringPhysicianName: <strong th:text="${instance.series.study.referringPhysicianName}"></strong></p>
+          </div>
+        </a>
+        <p class="panel-heading has-background-primary">序列</p>
+        <a class="panel-block" th:href="'/detail/series/' + ${instance.series.id}">
+          <div class="panel-content">
+            <p th:text="${instance.series.seriesDescription}"></p>
+            <p th:if="${instance.series.seriesInstanceUID}">SeriesInstanceUID: <strong th:text="${instance.series.seriesInstanceUID}"></strong></p>
+            <p th:if="${instance.series.stationName}">StationName: <strong th:text="${instance.series.stationName}"></strong></p>
+            <p th:if="${instance.series.seriesNumber}">SeriesNumber: <strong th:text="${instance.series.seriesNumber}"></strong></p>
+            <p th:if="${instance.series.numberOfTemporalPositions}">NumberOfTemporalPositions: <strong th:text="${instance.series.numberOfTemporalPositions}"></strong></p>
+          </div>
+        </a>
+        <p class="panel-heading has-background-primary">实例</p>
+        <div class="panel-block">
+          <div class="panel-content">
+            <p th:text="'Instance: ' + ${instance.id}"></p>
+            <p th:if="${instance.imageIndex}">ImageIndex: <strong th:text="${instance.imageIndex}"></strong></p>
+            <p th:if="${instance.SOPInstanceUID}">SOPInstanceUID: <strong th:text="${instance.SOPInstanceUID}"></strong></p>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <p class="panel-heading has-background-info">操作</p>
+        <a class="panel-block" th:href="'/viewer/' + ${id}">浏览</a>
+<!--        <a class="panel-block">下载</a>-->
+<!--        <a class="panel-block">删除</a>-->
+      </div>
+    </div>
+    <div class="column">
+      <div class="panel">
+        <div class="panel">
+          <p class="panel-heading has-background-info">详细</p>
+          <div class="panel-block">
+            <div id="instance-metadata"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script th:src="@{/js/jquery.min.js}"></script>
+<script src="/js/default.js"></script>
+<script src="/js/axios.min.js"></script>
+<script th:inline="javascript">
+    const id = [[${instance.id}]];
+</script>
+<script>
+    const instanceMetadata = document.getElementById('instance-metadata');
+    axios.get(`/metadata/${id}`).then(response => {
+        const metadata = response.data;
+        instanceMetadata.innerHTML = instanceTagsRender(metadata);
+
+        function instanceTagsRender(parsedJson) {
+            let innerHTML = '';
+            const keys = Object.keys(parsedJson);
+            for (let i = 0; i < keys.length; i++) {
+                const value = parsedJson[keys[i]]['Value'];
+                if (typeof value !== "undefined") {
+                    if (value.length >= 1 && value[0] instanceof Object) {
+                        if (typeof value[0]['Alphabetic'] !== "undefined") {
+                            innerHTML += getInnerHTML(keys[i], value[0]['Alphabetic']);
+                        } else {
+                            innerHTML += getInnerHTML(keys[i], '');
+                            innerHTML += `<div style="padding-left: 2rem">${instanceTagsRender(value[0])}</div>`;
+                        }
+                    } else {
+                        innerHTML += getInnerHTML(keys[i], value);
+                    }
+                } else {
+                    innerHTML += getInnerHTML(keys[i], null);
+                }
+            }
+            return innerHTML;
+        }
+    });
+
+    function getInnerHTML(key, value) {
+        return `<p>${key.substr(0, 4)},${key.substr(4, 4)}: <strong>${value}</strong></p>`;
+    }
+</script>
+</body>
+</html>

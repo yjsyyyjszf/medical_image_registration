@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>医学图像浏览系统</title>
+  <link rel="stylesheet" href="/css/bulma.min.css">
+  <link rel="stylesheet" href="/css/default.css">
+</head>
+<body>
+<th:block th:replace="layout::navbar"/>
+<div class="container is-fluid">
+  <div class="columns">
+    <div class="column is-one-quarter">
+      <div class="panel">
+        <p class="panel-heading has-background-primary">病人</p>
+        <a class="panel-block" th:href="'/detail/patient/' + ${series.study.patient.id}">
+          <div class="panel-content">
+            <p th:text="${series.study.patient.patientName}"></p>
+            <p th:if="${series.study.patient.patientID}">PatientID: <strong th:text="${series.study.patient.patientID}"></strong></p>
+            <p th:if="${series.study.patient.patientSex}">PatientSex: <strong th:text="${series.study.patient.patientSex}"></strong></p>
+            <p th:if="${series.study.patient.patientBirthDate}">PatientBirthDate: <strong th:text="${series.study.patient.patientBirthDate}"></strong></p>
+          </div>
+        </a>
+        <p class="panel-heading has-background-primary">检查</p>
+        <a class="panel-block" th:href="'/detail/study/' + ${series.study.id}">
+          <div class="panel-content">
+            <p th:text="${series.study.studyDescription}"></p>
+            <p th:if="${series.study.studyID}">StudyID: <strong th:text="${series.study.studyID}"></strong></p>
+            <p th:if="${series.study.studyDate}">StudyDate: <strong th:text="${series.study.studyDate}"></strong></p>
+            <p th:if="${series.study.studyInstanceUID}">StudyInstanceUID: <strong th:text="${series.study.studyInstanceUID}"></strong></p>
+            <p th:if="${series.study.accessionNumber}">AccessionNumber: <strong th:text="${series.study.accessionNumber}"></strong></p>
+            <p th:if="${series.study.referringPhysicianName}">ReferringPhysicianName: <strong th:text="${series.study.referringPhysicianName}"></strong></p>
+          </div>
+        </a>
+        <p class="panel-heading has-background-primary">序列</p>
+        <div class="panel-block">
+          <div class="panel-content">
+            <p th:text="${series.seriesDescription}"></p>
+            <p th:if="${series.seriesInstanceUID}">SeriesInstanceUID: <strong th:text="${series.seriesInstanceUID}"></strong></p>
+            <p th:if="${series.stationName}">StationName: <strong th:text="${series.stationName}"></strong></p>
+            <p th:if="${series.seriesNumber}">SeriesNumber: <strong th:text="${series.seriesNumber}"></strong></p>
+            <p th:if="${series.numberOfTemporalPositions}">NumberOfTemporalPositions: <strong th:text="${series.numberOfTemporalPositions}"></strong></p>
+          </div>
+        </div>
+      </div>
+<!--      <div class="panel">-->
+<!--        <p class="panel-heading has-background-info">操作</p>-->
+<!--        <a class="panel-block">下载</a>-->
+<!--        <a class="panel-block">删除</a>-->
+<!--      </div>-->
+    </div>
+    <div class="column">
+      <div class="panel">
+        <p class="panel-heading has-background-primary" th:text="${series.study.studyDate}"></p>
+        <a class="panel-block" th:each="instance, instanceStat : ${series.instances}" th:href="'/detail/instance/' + ${instance.id}">
+          <div class="panel-content">
+            <p th:text="'Instance: ' + ${instanceStat.index + 1}"></p>
+            <p th:if="${instance.imageIndex}">ImageIndex: <strong th:text="${instance.imageIndex}"></strong></p>
+            <p th:if="${instance.SOPInstanceUID}">SOPInstanceUID: <strong th:text="${instance.SOPInstanceUID}"></strong></p>
+          </div>
+        </a>
+        <a class="panel-block" th:if="${series.instances.size() == 0}">
+          <div class="panel-content">
+            <p>No Data.</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+<script th:src="@{/js/jquery.min.js}"></script>
+<script src="/js/default.js"></script>
+</body>
+</html>

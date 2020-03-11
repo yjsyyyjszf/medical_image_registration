@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>医学图像浏览系统</title>
+  <link rel="stylesheet" href="/css/bulma.min.css">
+  <link rel="stylesheet" href="/css/default.css">
+</head>
+<body>
+<th:block th:replace="layout::navbar"/>
+<div class="container is-fluid">
+  <div class="columns">
+    <div class="column is-one-quarter">
+      <div class="panel">
+        <p class="panel-heading has-background-primary">病人</p>
+        <div class="panel-block">
+          <div class="panel-content">
+            <p th:text="${patient.patientName}"></p>
+            <p th:if="${patient.patientID}">PatientID: <strong th:text="${patient.patientID}"></strong></p>
+            <p th:if="${patient.patientSex}">PatientSex: <strong th:text="${patient.patientSex}"></strong></p>
+            <p th:if="${patient.patientBirthDate}">PatientBirthDate: <strong th:text="${patient.patientBirthDate}"></strong></p>
+          </div>
+        </div>
+      </div>
+<!--      <div class="panel">-->
+<!--        <p class="panel-heading has-background-info">操作</p>-->
+<!--        <a class="panel-block">删除病人</a>-->
+<!--      </div>-->
+<!--      <div class="panel">-->
+<!--        <p class="panel-heading has-background-info">访问</p>-->
+<!--        <a class="panel-block">下载</a>-->
+<!--      </div>-->
+    </div>
+    <div class="column">
+      <div class="panel" th:each="study : ${patient.studies}">
+        <p class="panel-heading has-background-primary" th:text="${study.studyDate}"></p>
+        <a class="panel-block" th:href="'/detail/study/' + ${study.id}">
+          <div class="panel-content">
+            <p th:text="${study.studyDescription}"></p>
+            <p th:if="${study.studyID}">StudyID: <strong th:text="${study.studyID}"></strong></p>
+            <p th:if="${study.studyDate}">StudyDate: <strong th:text="${study.studyDate}"></strong></p>
+            <p th:if="${study.studyInstanceUID}">StudyInstanceUID: <strong th:text="${study.studyInstanceUID}"></strong></p>
+            <p th:if="${study.accessionNumber}">AccessionNumber: <strong th:text="${study.accessionNumber}"></strong></p>
+            <p th:if="${study.referringPhysicianName}">ReferringPhysicianName: <strong th:text="${study.referringPhysicianName}"></strong></p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+<script th:src="@{/js/jquery.min.js}"></script>
+<script src="/js/default.js"></script>
+</body>
+</html>

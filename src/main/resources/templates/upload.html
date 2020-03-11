@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dicom Upload</title>
+  <link rel="shortcut icon" th:href="@{/images/favicon.ico}" type="image/x-icon">
+  <link rel="stylesheet" th:href="@{/css/font-awesome/css/font-awesome.css}">
+  <link rel="stylesheet" href="/css/bulma.min.css">
+  <link rel="stylesheet" href="/css/default.css">
+</head>
+<body class = "html_upload">
+<th:block th:replace="layout::navbar"/>
+
+<div class = "modal-container">
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">文件上传</p>
+    </header>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+      <section class="modal-card-body">
+        <div class="field" style="justify-content: center;">
+          <div class="file is-info has-name">
+            <label class="file-label">
+              <input id="file-input" class="file-input" type="file" accept="application/dicom" name="dicomFiles" multiple>
+              <span class="file-cta">
+                <span class="file-icon"><i class="fa fa-upload" aria-hidden="true"></i></span>
+                <span class="file-label"> 选择文件</span>
+              </span>
+              <span class="file-name">
+                <span th:if="!${message}">未选择文件</span>
+                <span th:if="${message}" class="has-text-danger">上传成功！</span>
+              </span>
+            </label>
+          </div>
+        </div>
+      </section>
+      <footer class="modal-card-foot">
+        <button type="submit" class="button is-success">上传</button>
+      </footer>
+    </form>
+  </div>
+</div>
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{/js/default.js}"></script>
+<script>
+    $(".modal-container").css("height",$(window).height() - 72 + "px")
+    $("#file-input").change(function() {
+      var fileNumber = document.getElementById('file-input').files.length;
+      if (fileNumber > 1) {
+        $(".file-name").text("已选择" + fileNumber + "个文件");
+      }else {
+        $(".file-name").text($(this).val().split('\\').pop());
+        if($("#file-input").val()==""){$(".file-name").text("未选择文件");}
+
+      }
+    });
+</script>
+</body>
+</html>
