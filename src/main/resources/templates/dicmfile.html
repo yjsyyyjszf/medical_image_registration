@@ -108,18 +108,6 @@
         '<a href="/download/' + id + '" id="bind" type="button" class="button is-primary is-small">下载</a>'
       ].join('');
     }
-    window.operateEvents = {
-      'click #bind': function (e, value, row, index) {
-    	 /*  let id = JSON.stringify(row.id);
-    	  axios.get('/download/' + id)
-          .then(function (response) {
-            console.log(response);
-          })
-          .catch(function (error) {
-            console.log(error);
-          }); */
-      }
-    };
 
     $('#table').bootstrapTable({
         columns: [{
@@ -131,7 +119,6 @@
         }, {
           field:'Button',
           title:'操作',
-          events: operateEvents,         //给按钮注册事件
           formatter: addFunctionAlty    //表格中增加按钮
         }]
       })
