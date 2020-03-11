@@ -7,19 +7,26 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.multipart.MultipartFile;
+
+import medicalimagebrowser.entity.Dicmfile;
 import medicalimagebrowser.entity.Instance;
 import medicalimagebrowser.entity.Patient;
 import medicalimagebrowser.entity.Series;
 import medicalimagebrowser.entity.Study;
+import medicalimagebrowser.repository.DicmfileRepository;
 import medicalimagebrowser.repository.InstanceRepository;
 import medicalimagebrowser.repository.PatientRepository;
 import medicalimagebrowser.repository.SeriesRepository;
 import medicalimagebrowser.repository.StudyRepository;
 import medicalimagebrowser.util.DicomUtil;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
+
+import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.UUID;
 
 @Controller
 public class UploadController {
@@ -28,12 +35,14 @@ public class UploadController {
     private final StudyRepository studyRepository;
     private final SeriesRepository seriesRepository;
     private final InstanceRepository instanceRepository;
+    private final DicmfileRepository dicmfileRepository;
 
-    public UploadController(PatientRepository patientRepository, StudyRepository studyRepository, SeriesRepository seriesRepository, InstanceRepository instanceRepository) {
+    public UploadController(PatientRepository patientRepository, StudyRepository studyRepository, SeriesRepository seriesRepository, InstanceRepository instanceRepository,DicmfileRepository dicmfileRepository) {
         this.patientRepository = patientRepository;
         this.studyRepository = studyRepository;
         this.seriesRepository = seriesRepository;
         this.instanceRepository = instanceRepository;
+        this.dicmfileRepository = dicmfileRepository;
     }
 
     @GetMapping("/upload")
@@ -42,9 +51,10 @@ public class UploadController {
     }
 
     @PostMapping("/upload")
-    public String upload(MultipartFile[] dicomFiles, Model model) throws IOException {
+    public String upload(MultipartFile[] dicomFiles, Model model,HttpServletRequest Request) throws IOException {
         for (MultipartFile dicomFile : dicomFiles) {
             save(dicomFile);
+            uploadFile(dicomFile,Request);
         }
         model.addAttribute("message", "上传成功！");
         return "upload";
@@ -54,6 +64,37 @@ public class UploadController {
 //            .toUriString();
     }
 
+    public void uploadFile(MultipartFile dicomFile,HttpServletRequest Request){
+    	Dicmfile dicmfile = new Dicmfile();
+        // 获取文件名
+        String fileName = dicomFile.getOriginalFilename();
+        // 获取文件名后缀
+        // String suffixName = fileName.substring(fileName.lastIndexOf("."));
+        // 文件保存路径
+        String filePath = "D:/DicomDirectory/dicm/";
+        // 文件重命名，防止重复
+        String uuid = UUID.randomUUID().toString();
+        String filename = uuid.replace("-","") + fileName.replace("-","");
+        fileName = filePath + uuid.replace("-","") + fileName.replace("-","");
+        String fileurl = fileName;
+        System.out.println(Request.getSession().getServletContext().getRealPath("/")+ "upload\\");
+        // 文件对象
+        File dest = new File(fileName);
+        // 判断路径是否存在，如果不存在则创建
+        if(!dest.getParentFile().exists()) {
+            dest.getParentFile().mkdirs();
+        }
+        try {
+            // 保存到服务器中
+            dicomFile.transferTo(dest);
+            dicmfile.setFilename(filename);
+            dicmfile.setFileurl(fileurl);
+            dicmfileRepository.save(dicmfile);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
     @Transactional
     void save(MultipartFile dicomFile) throws IOException {
 

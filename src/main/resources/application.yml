@@ -17,4 +17,7 @@ spring:
       enabled: false
     restart:
       enabled: false
+  servlet:
+    multipart:
+      location: d:/DicomDirectory/dicm
 

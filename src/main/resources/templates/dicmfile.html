@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CT与MRI影像的交互平台</title>
+  <link rel="shortcut icon" th:href="@{/images/favicon.ico}" type="image/x-icon">
+  <link rel="stylesheet" th:href="@{/css/font-awesome/css/font-awesome.css}">
+  <link rel="stylesheet" th:href="@{/css/bulma.min.css}">
+  <link rel="stylesheet" th:href="@{/css/bootstrap-table-bulma.min.css}">
+  <link rel="stylesheet" th:href="@{/css/default.css}">
+  
+  <style>
+    .container.is-fluid {
+      width: 70% !important;
+    }
+    .search-input {
+      border: none !important;
+      outline:none !important;
+      border-bottom: 1px solid #eee !important;
+      padding: 10px 0 !important;
+      background-color: #EEF5F9;
+    }
+    .search-input:focus {
+      border-color: #796AEE !important;
+    }
+    .pagination-link.is-current {
+      background-color: #00d1b2 !important;
+      border-color: #00d1b2 !important;
+    }
+    /* .pagination-link {
+      border-radius: 0 !important;
+    } */
+    .table {
+      background-color: #EEF5F9;
+    }
+    .fixed-table-loading {
+      background-color: #EEF5F9 !important;
+    }
+    .table td {
+      padding: .3rem !important;
+    }
+    .dropdown-content .is-active {
+    	background-color:#00d1b2 !important;
+    }
+    .dropdown-menu {
+	    min-width: 5rem !important;
+    }
+    .button.is-focused, .button:focus {
+	    border-color: #00d1b2 !important;
+	}
+	.pagination-link:visited {
+		border-color: #00d1b2 !important; 
+	}
+	.pagination-link:visited {
+		border-color: #00d1b2 !important; 
+	}
+  </style>
+  
+</head>
+<body>
+<div class = "user-container">
+  <th:block th:replace="layout::navbar"/>
+  <div class="container is-fluid">
+    <div id = "toolbar"></div>
+    <table
+      data-classes="table is-fluid table-hover table-sm"
+      id="table"
+      data-locale="zh-CN"
+      data-toggle="table"
+      data-pagination="true"
+      data-pagination-loop="true"
+      data-side-pagination="client"
+      data-page-number="1"
+      data-page-size="10"
+      data-page-list="[10, 25, 50, 100, All]"
+      data-search="true"
+      data-search-on-enter-key="true"
+      data-show-refresh="true"
+      data-search-align="left"
+      data-toolbar-align="right"
+      data-pagination-h-align="right"
+      data-pagination-detail-h-align="left"
+      data-url="/dicmfile">
+      	
+    </table>
+</span>
+  </div>
+</div>
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{/js/bootstrap-table.min.js}"></script>
+<script th:src="@{/js/bootstrap-table-bulma.min.js}"></script>
+<script th:src="@{/js/bootstrap-table-zh-CN.min.js}"></script>
+<script th:src="@{/js/default.js}"></script>
+<script>
+  $(function () {
+	$('.search-input').removeClass('input');
+    $('.fixed-table-toolbar .button .fa').removeClass('fa-sync');
+    $('.fixed-table-toolbar .button .fa').addClass('fa-refresh');
+    $('.fixed-table-toolbar .button').addClass('is-primary is-small');
+    $('.user-container').css('height',$(window).height() + 'px');
+    
+  })
+  
+  function addFunctionAlty(value, row, index) {
+	  let id = JSON.stringify(row.id);
+      return [
+        '<a href="/download/' + id + '" id="bind" type="button" class="button is-primary is-small">下载</a>'
+      ].join('');
+    }
+    window.operateEvents = {
+      'click #bind': function (e, value, row, index) {
+    	 /*  let id = JSON.stringify(row.id);
+    	  axios.get('/download/' + id)
+          .then(function (response) {
+            console.log(response);
+          })
+          .catch(function (error) {
+            console.log(error);
+          }); */
+      }
+    };
+
+    $('#table').bootstrapTable({
+        columns: [{
+          field:'id',
+          title:'编号'
+      }, {
+          field: 'filename',
+          title: '文件'
+        }, {
+          field:'Button',
+          title:'操作',
+          events: operateEvents,         //给按钮注册事件
+          formatter: addFunctionAlty    //表格中增加按钮
+        }]
+      })
+</script>
+</body>
+</html>

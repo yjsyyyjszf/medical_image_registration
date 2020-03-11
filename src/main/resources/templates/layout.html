@@ -31,18 +31,14 @@
           </a>
 
           <div class="navbar-dropdown">
-            <a class="navbar-item" href="/upload">
+            <a class="navbar-item">
               单视图
             </a>
             <a class="navbar-item">
               多视图
             </a>
             <a class="navbar-item">
-              床宽
-            </a>
-            <hr class="navbar-divider">
-            <a class="navbar-item" href="/logout">
-              窗位
+              窗宽/窗位
             </a>
           </div>
         </div>
@@ -55,15 +51,15 @@
             <a class="navbar-item" href="/upload">
               上传
             </a>
-            <a class="navbar-item">
-              重载
+            <a class="navbar-item" href="/dicmfile/list">
+              下载
             </a>
             <a class="navbar-item">
               关闭
             </a>
             <hr class="navbar-divider">
-            <a class="navbar-item" href="/logout">
-              退出登录
+            <a class="navbar-item" >
+              退出
             </a>
           </div>
         </div>
@@ -72,8 +68,8 @@
         <div class="navbar-item">
           <th:block th:replace="login::userName" />
           <div class="buttons">
-            <a class="button is-primary" href="/upload">上传</a>
-            <a class="button is-light" href="/logout">退出</a>
+            <!-- <a class="button is-primary" href="/upload">上传</a> -->
+            <a class="button is-light" href="/logout">退出登录</a>
           </div>
         </div>
       </div>
