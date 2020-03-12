@@ -11,8 +11,13 @@ nav.navbar, .lookup-buttons {
 }
 body {
     background-color: #EEF5F9;
+    position:relative;
 }
-
+.bottom-footer {
+	width: 100%;
+    /* position: fixed;
+    bottom: 0; */
+}
 /*.button, .input, .panel-heading, .file-cta, .file-name {
     border-radius: 0;
 }*/
@@ -137,7 +142,7 @@ input.input-material.is-invalid ~ label {
     border-bottom: none !important;
     /*border-top-left-radius: 0 !important;
     border-top-right-radius: 0 !important;*/
-    background: #796AEE !important;
+    background: #00d1b2 !important;
 }
 .modal-card-head p {
     color: #fff !important;
